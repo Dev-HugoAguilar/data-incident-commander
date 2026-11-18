@@ -1,0 +1,51 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  dominio:
+    name: Pruebas de dominio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependencias de desarrollo
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Ejecutar pruebas
+        run: python -m pytest -q
+
+  demo:
+    name: Integridad de la demo estática
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar archivos obligatorios
+        run: |
+          set -eu
+          for archivo in web/index.html web/styles.css web/app.js web/data.json; do
+            test -s "$archivo" || { echo "Falta $archivo"; exit 1; }
+          done
+
+      - name: Verificar que no se publiquen credenciales
+        run: |
+          set -eu
+          if grep -rIl --exclude-dir=.git -E '(mongodb(\+srv)?://[^"[:space:]]*:[^"[:space:]]*@|sk-[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|github_pat_)' .; then
+            echo "Se detectaron posibles credenciales"; exit 1
+          fi
+          echo "Sin credenciales detectadas"

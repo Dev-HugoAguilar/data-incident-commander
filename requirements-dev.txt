@@ -1,0 +1,4 @@
+# Dependencias de desarrollo y prueba.
+# El servicio y la demo no tienen dependencias en tiempo de ejecución.
+pydantic-settings==2.12.0
+pytest==8.4.2
