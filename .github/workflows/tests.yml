@@ -45,7 +45,10 @@ jobs:
       - name: Verificar que no se publiquen credenciales
         run: |
           set -eu
-          if grep -rIl --exclude-dir=.git -E '(mongodb(\+srv)?://[^"[:space:]]*:[^"[:space:]]*@|sk-[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|github_pat_)' .; then
+          # Se excluye .github porque este mismo archivo enumera los patrones:
+          # buscarlos sobre sí mismo produce un positivo falso. El escaneo local
+          # (tools/escanear-secretos.ps1) sí revisa .github con reglas propias.
+          if grep -rIl --exclude-dir=.git --exclude-dir=.github -E '(mongodb(\+srv)?://[^"[:space:]]*:[^"[:space:]]*@|sk-[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY)' .; then
             echo "Se detectaron posibles credenciales"; exit 1
           fi
           echo "Sin credenciales detectadas"
