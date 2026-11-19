@@ -1,3 +1,21 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-incident-commander"
+version = "1.0.0"
+description = "Respuesta a incidentes de datos con aprobación humana y validaciones deterministas (snapshot WDI local)."
+requires-python = ">=3.11"
+dependencies = ["pydantic-settings>=2.0,<3"]
+
+[project.optional-dependencies]
+dev = ["pytest==8.4.2"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["app", "app.incident_commander"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
